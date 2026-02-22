@@ -3,6 +3,9 @@ import { Send, Settings, Moon, Sun, Trash2, Download, Image, Video, Paperclip, X
 import axios from 'axios';
 import Login from './Login';
 
+// Add this line right here - it uses the environment variable from Vercel
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
 interface Message {
   id: string;
   role: 'user' | 'assistant';
@@ -77,7 +80,7 @@ function App() {
 
   const checkAuth = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/auth/verify', {
+      const response = await axios.get(`${API_URL}/api/auth/verify`, {
         withCredentials: true
       });
       if (response.data.authenticated) {
@@ -90,7 +93,7 @@ function App() {
 
   const handleLogout = async () => {
     try {
-      await axios.post('http://localhost:3001/api/auth/logout', {}, {
+      await axios.post(`${API_URL}/api/auth/logout`, {}, {
         withCredentials: true
       });
       setCurrentUser(null);
@@ -101,7 +104,7 @@ function App() {
 
   const checkHealth = async () => {
     try {
-      await axios.get('http://localhost:3001/api/health');
+      await axios.get(`${API_URL}/api/health`);
       setApiAvailable(true);
       fetchModels();
     } catch (error) {
@@ -112,7 +115,7 @@ function App() {
 
   const fetchModels = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/chat/models');
+      const response = await axios.get(`${API_URL}/api/chat/models`);
       // Enhance models with capabilities based on name
       const enhancedModels = response.data.map((model: any) => ({
         ...model,
@@ -229,7 +232,7 @@ function App() {
         }
       }
 
-      const response = await axios.post('http://localhost:3001/api/chat', {
+      const response = await axios.post(`${API_URL}/api/chat`, {
         message: userMessage.content,
         provider: 'local',
         model: selectedModel || 'tinyllama:1.1b',
