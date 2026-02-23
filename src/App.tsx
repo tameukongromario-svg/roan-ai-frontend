@@ -3,8 +3,8 @@ import { Send, Settings, Moon, Sun, Trash2, Download, Image, Video, Paperclip, X
 import axios from 'axios';
 import Login from './Login';
 
-// Add this line right here - it uses the environment variable from Vercel
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+// Hardcoded backend URL for Render
+const API_URL = 'https://roan-ai-backend.onrender.com';
 
 interface Message {
   id: string;
