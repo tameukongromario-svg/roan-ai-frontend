@@ -23,7 +23,7 @@ function Login({ onLogin, onClose }: LoginProps) {
     try {
       if (isLogin) {
         // Login
-        const response = await axios.post('http://localhost:3001/api/auth/login', {
+        const response = await axios.post('https://roan-ai-backend.onrender.com/api/auth/login', {
           email,
           password
         }, {
@@ -36,7 +36,7 @@ function Login({ onLogin, onClose }: LoginProps) {
         }
       } else {
         // Register
-        const response = await axios.post('http://localhost:3001/api/auth/register', {
+        const response = await axios.post('https://roan-ai-backend.onrender.com/api/auth/register', {
           username,
           email,
           password
