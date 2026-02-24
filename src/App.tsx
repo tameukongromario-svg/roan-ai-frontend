@@ -234,8 +234,8 @@ function App() {
 
       const response = await axios.post(`${API_URL}/api/chat`, {
         message: userMessage.content,
-        provider: 'openrouter', // Changed from 'local' to 'openrouter'
-        model: selectedModel || 'tinyllama:1.1b',
+        provider: 'openrouter',
+        model: 'cognitivecomputations/dolphin-mixtral-8x7b', // Valid OpenRouter model
         systemPrompt: finalSystemPrompt,
         conversation: messages.map(m => ({ role: m.role, content: m.content })),
         temperature
