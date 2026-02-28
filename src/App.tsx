@@ -232,10 +232,23 @@ function App() {
         }
       }
 
+      // FIX: Add :free suffix to models that need it
+      let modelToUse = selectedModel || 'openrouter/free';
+      
+      // If it's a model that needs the :free suffix and doesn't already have it
+      if (modelToUse && 
+          !modelToUse.includes(':free') && 
+          modelToUse !== 'openrouter/free' &&
+          !modelToUse.includes('openai/') &&  // Skip OpenAI models
+          !modelToUse.includes('claude')) {    // Skip Claude models
+        modelToUse = `${modelToUse}:free`;
+        console.log('Adjusted model to free version:', modelToUse);
+      }
+
       const response = await axios.post(`${API_URL}/api/chat`, {
         message: userMessage.content,
         provider: 'openrouter',
-        model: 'cognitivecomputations/dolphin-mixtral-8x7b', // Valid OpenRouter model
+        model: modelToUse,
         systemPrompt: finalSystemPrompt,
         conversation: messages.map(m => ({ role: m.role, content: m.content })),
         temperature
