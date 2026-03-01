@@ -245,6 +245,8 @@ function App() {
         console.log('Adjusted model to free version:', modelToUse);
       }
 
+      console.log('Sending request with model:', modelToUse);
+      
       const response = await axios.post(`${API_URL}/api/chat`, {
         message: userMessage.content,
         provider: 'openrouter',
@@ -253,6 +255,8 @@ function App() {
         conversation: messages.map(m => ({ role: m.role, content: m.content })),
         temperature
       });
+
+      console.log('API Response:', response.data);
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -264,11 +268,44 @@ function App() {
       setMessages(prev => [...prev, assistantMessage]);
       setIsLoading(false);
     } catch (error: any) {
-      console.error('Chat error:', error);
+      console.error('Full error object:', error);
+      
+      // Extract the actual error message
+      let errorMessage = 'Failed to get response';
+      let errorDetails = '';
+      
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        console.error('Error response data:', error.response.data);
+        console.error('Error response status:', error.response.status);
+        console.error('Error response headers:', error.response.headers);
+        
+        if (error.response.data) {
+          if (typeof error.response.data === 'object') {
+            try {
+              errorDetails = JSON.stringify(error.response.data, null, 2);
+            } catch (e) {
+              errorDetails = String(error.response.data);
+            }
+          } else {
+            errorDetails = String(error.response.data);
+          }
+        }
+        errorMessage = `Server error (${error.response.status}): ${errorDetails}`;
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error('Error request:', error.request);
+        errorMessage = 'No response from server. Check if backend is running.';
+      } else {
+        // Something happened in setting up the request
+        console.error('Error message:', error.message);
+        errorMessage = error.message;
+      }
+      
       setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `⚠️ Error: ${error.response?.data?.details || error.message || 'Failed to get response'}`,
+        content: `⚠️ Error: ${errorMessage}`,
         timestamp: new Date()
       }]);
       setIsLoading(false);
@@ -336,7 +373,7 @@ function App() {
       <header className="border-b border-gray-200 dark:border-gray-700 p-4">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-            🚀 ROAN AI
+            🚀 ROAN AI - DEBUG MODE
           </h1>
           <div className="flex gap-2 items-center">
             {!apiAvailable && (
@@ -453,7 +490,7 @@ function App() {
         <div className="max-w-6xl mx-auto space-y-4">
           {messages.length === 0 && (
             <div className="text-center text-gray-500 mt-20">
-              <h2 className="text-2xl font-bold mb-4">Welcome to ROAN AI</h2>
+              <h2 className="text-2xl font-bold mb-4">Welcome to ROAN AI - DEBUG MODE</h2>
               <p>Generate text, images, and videos with AI.</p>
               {!apiAvailable && (
                 <div className="mt-4 p-4 bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-lg">
@@ -492,6 +529,9 @@ function App() {
               </div>
               <p className="text-sm mt-8">
                 Drag & drop files anywhere or click the paperclip to upload
+              </p>
+              <p className="text-xs mt-4 text-purple-600">
+                Debug mode enabled - Check browser console (F12) for details
               </p>
             </div>
           )}
