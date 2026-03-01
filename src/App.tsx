@@ -688,4 +688,3 @@ function App() {
   );
 }
 
-export default App; // Fresh deploy
